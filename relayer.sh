@@ -119,14 +119,17 @@ echo ""
 
 netstat -i | cut -d ' ' -f1 | sed 1,2d >> ./relayer.ifaces
 
-if [[ -s relayer.ifaces]]; then
-    echo "Select Interface to run Responder"
-    ifaces=$(<relayer.ifaces)
-    select netiface in $ifaces ; do
-    echo "Starting Responder on $netiface..."
-    responder -I $netiface -wrfF >>relayer.log &
-    break
-fi
+echo "Enter Interface to run Responder"
+echo "Showing available interfaces:"
+echo ""
+ifaces=$(<relayer.ifaces)
+echo -e "$ifaces"
+echo ""
+echo -ne ">" ; read netiface
+echo ""
+echo "Starting Responder on $netiface..."
+responder -I $netiface -wrfF >> relayer.log &
+
 
 echo "Setting up listener..."
 
