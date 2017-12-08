@@ -28,7 +28,7 @@ echo "
 ╚═╝  ╚═╝╚══════╝╚══════╝╚═╝  ╚═╝   ╚═╝   ╚══════╝╚═╝  ╚═╝
 
 SMB Relay Script
-By Jason Soto
+By Jason Soto @jsitech
 
 ***************************************************************
 * Running this tool without prior mutual consent is Illegal   *
@@ -92,7 +92,6 @@ echo ""
 if [ "$select" = "1" ]; then
   echo ""
   lhost=$(ip route get 1 | awk '{print $NF;exit}')
-  echo "Meterpreter shell will connect back to $lhost"
   echo "Please enter local port for reverse connection:" ; read lport
   echo "Meterpreter shell will connect back to $lhost on port $lport"
 elif [ "$select" = "2" ]; then

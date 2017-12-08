@@ -20,6 +20,16 @@ Once everything is ready, usage is simple, simply run as root:
 
 sudo ./relayer.sh
 
-#NOTE
+# How does the Script Work
+
+Script runs the following Steps:
+
+* Scan for SMB Systems and List those with SMB signing Disabled
+* User selects system to Relay the authentication attempts to
+* User selects where to set the Listener for incoming connections
+* Relayer creates payload and sets up Responder and SMBRelayX
+* Wait for connection attempts to your attacking machine and check Listener
+
+# NOTE
 
 Only run this tool where you have permission to do so.
