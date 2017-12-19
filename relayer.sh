@@ -52,10 +52,15 @@ for port in 21/tcp 25/tcp 53/tcp 80/tcp 110/tcp 139/tcp 1433/tcp 443/tcp 587/tcp
   fi
 done
 
-echo "Please enter IP or Network to scan for SMB:" ; read network
-nmap -n -Pn -sS --script smb-security-mode.nse -p445 -oA relayer $network  >>relayer.log &
+echo "Please enter IP(s) or Network(s) separated by space to scan for SMB:" ; read network
+for subnet in $network; do
+    echo "$subnet"
+done >> relayersubnet.txt
+nmap -n -Pn -iL relayersubnet.txt -sS --script smb-security-mode.nse -p445 -oA relayer >>relayer.log &
 echo "Scanning for SMB hosts and NETBIOS name...It may take a little while"
 wait
+
+rm relayersubnet.txt
 
 for ip in $(grep open relayer.gnmap |cut -d ' ' -f 2 ); do
   hosts=$(grep -A 15 "for $ip$" relayer.nmap |grep disabled |wc -l)
@@ -147,3 +152,8 @@ elif [ "$select" = "2" ]; then
   echo "Run msfconsole -r msfhandler.rc on your listener box"
 fi
 
+
+#Cleanup
+
+rm relayer.hosts
+rm relayer.ifaces
