@@ -6,11 +6,9 @@ with the objective of gaining a shell. Great when performing Penetration testing
 
 Relayer makes use of Unicorn from trustedsec to create the payload that is executed
 on the target system you select. see https://github.com/trustedsec/unicorn , you can run
-the listener on the system you are running relayer on or an alternative system.
+the listener on the system you are running relayer on or an alternate system.
 
-I will be adding more payload options later on.
-
-Relayer is based off chuckle from nccgroup. so credits to them.
+Other Payload Options will be added.
 
 # USE
 
@@ -24,7 +22,7 @@ sudo ./relayer.sh
 
 Script runs the following Steps:
 
-* Scan for SMB Systems and List those with SMB signing Disabled
+* Scan for SMB Systems on Target Network and List those with SMB signing Disabled
 * User selects system to Relay the authentication attempts to
 * User selects where to set the Listener for incoming connections
 * Relayer creates payload and sets up Responder and SMBRelayX
@@ -33,3 +31,8 @@ Script runs the following Steps:
 # NOTE
 
 Only run this tool where you have permission to do so.
+
+# Credits
+
+* chuckle by Craig S. Blackie - github.com/nccgroup/chuckle
+* Unicorn (@HackingDave) - github.com/trustedsec/unicorn
