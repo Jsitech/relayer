@@ -1,6 +1,6 @@
-### Relayer - SMB Relay Script.
+### Relayer - SMB Relay Attack Script.
 
-Relayer is an SMB relay Script that automates all the necessary steps to scan for
+Relayer is an SMB relay Attack Script that automates all the necessary steps to scan for
 systems with SMB signing disabled and relaying authentication request to these systems
 with the objective of gaining a shell. Great when performing Penetration testing.
 
