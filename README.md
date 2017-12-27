@@ -8,7 +8,9 @@ Relayer makes use of Unicorn from trustedsec to create the payload that is execu
 on the target system you select. see https://github.com/trustedsec/unicorn , you can run
 the listener on the system you are running relayer on or an alternate system.
 
-Other Payload Options will be added.
+Another payload Option includes using Ps1encode (https://github.com/CroweCybersecurity/ps1encode)
+to generate and encode a powershell based metasploit payload using an sct (COM Scriptlet) file.
+Relayer will automatically create a webserver using python to stage the payload.
 
 # USE
 
