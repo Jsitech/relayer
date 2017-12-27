@@ -78,5 +78,14 @@ else
   git clone https://github.com/trustedsec/unicorn
 fi
 
+if [ -d ps1encode/ ]; then
+  echo ""
+  echo "Ps1encode is present"
+else
+  echo ""
+  echo "Ps1encode is not present, Cloning Ps1encode"
+  git clone https://github.com/CroweCybersecurity/ps1encode
+fi
+
 echo ""
 echo "Relayer is ready to Run"

