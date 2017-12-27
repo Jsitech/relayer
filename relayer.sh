@@ -78,19 +78,25 @@ if [ "$missing" == 1 ]; then
    exit
 fi
 
-echo "Checking if Unicorn from TrustedSec is Present"
+echo "Checking if Unicorn and Ps1encode are Present"
 spinner
 
-if [ -d unicorn/ ]; then
-  echo ""
-  echo "Unicorn Dir is Present, Moving on"
-  sleep 0.02
-else
-  echo ""
-  echo "Unicorn is not Present, Please run install_req.sh"
-  exit
-fi
+for dependency2 in unicorn ps1encode
+do
+   if [ -d $dependency2/ ]; then
+     echo ""
+     echo "$dependency2 Dir is Present, Moving on"
+     sleep 0.02
+   else
+     echo ""
+     echo "$dependency2 is not Present, Please run install_req.sh"
+     missing2=1
+  fi
+done
 
+if [ "$missing2" == 1 ]; then
+   exit
+fi
 
 echo "Checking if Needed ports are Available"
 spinner
