@@ -38,3 +38,4 @@ Only run this tool where you have permission to do so.
 
 * chuckle by Craig S. Blackie - github.com/nccgroup/chuckle
 * Unicorn (@HackingDave) - github.com/trustedsec/unicorn
+* ps1encode by CroweCybersecurity - github.com/crowecybersecurity/ps1encode
