@@ -228,7 +228,7 @@ done
 echo "Payload created"
 echo "Starting SMBRelayX..."
 
-smbrelayx.py -h $target -c "$payload"  >> relayer.log  &
+smbrelayx.py -h $target -e "$payload"  >> relayer.log  &
 sleep 2
 
 echo ""
