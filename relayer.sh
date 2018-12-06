@@ -37,7 +37,14 @@ By Jason Soto @jsitech
 * Laws. Author assume no liability and is not responsible for *
 * any misuse of this tool.                                    *
 ***************************************************************
+                               ||
+                               ||
+                        (\__/) ||
+                        (•ㅅ•) ||
+                        / 　 づ
+
 "
+
 echo
 echo
 
@@ -158,7 +165,7 @@ echo ""
 
 if [ "$select" = "1" ]; then
   echo ""
-  lhost=$(ip route get 1 | awk '{print $NF;exit}')
+  lhost=$(ip route get 1 | awk '{print $7;exit}')
   echo "Please enter local port for reverse connection:" ; read lport
   echo "Meterpreter shell will connect back to $lhost on port $lport"
 elif [ "$select" = "2" ]; then
